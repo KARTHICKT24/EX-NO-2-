@@ -1,13 +1,15 @@
 ## EX. NO:2 IMPLEMENTATION OF PLAYFAIR CIPHER
 
- 
+## NAME : KARTHICK KISHORE T
+## REG NO : 212223220042
+## DATE : 20-03-2025
 
 ## AIM:
  
 
  
 
-To write a C program to implement the Playfair Substitution technique.
+To write a Python program to implement the Playfair Substitution technique.
 
 ## DESCRIPTION:
 
@@ -34,10 +36,59 @@ STEP-5: Display the obtained cipher text.
 
 
 
-Program:
+## Program:
+```
+def generate_playfair_matrix(key):
+    key = "".join(dict.fromkeys(key.upper().replace("J", "I"))) 
+    alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+    matrix = "".join([char for char in key if char in alphabet] + [char for char in alphabet if char not in key])
+    return [list(matrix[i:i+5]) for i in range(0, 25, 5)]
+
+def find_position(matrix, letter):
+    for i, row in enumerate(matrix):
+        if letter in row:
+            return i, row.index(letter)
+
+def playfair_cipher(text, key, encrypt=True):
+    matrix = generate_playfair_matrix(key)
+    text = text.upper().replace("J", "I").replace(" ", "")
+    pairs = []
+    i = 0
+    while i < len(text):
+        a = text[i]
+        b = text[i + 1] if i + 1 < len(text) and text[i] != text[i + 1] else "X"
+        pairs.append((a, b))
+        i += 2 if b != "X" else 1
+    
+    result = ""
+    for a, b in pairs:
+        row1, col1 = find_position(matrix, a)
+        row2, col2 = find_position(matrix, b)
+        if row1 == row2:  # Same row
+            col1 = (col1 + (1 if encrypt else -1)) % 5
+            col2 = (col2 + (1 if encrypt else -1)) % 5
+        elif col1 == col2:  # Same column
+            row1 = (row1 + (1 if encrypt else -1)) % 5
+            row2 = (row2 + (1 if encrypt else -1)) % 5
+        else:  # Rectangle swap
+            col1, col2 = col2, col1
+        result += matrix[row1][col1] + matrix[row2][col2]
+    
+    return result
+
+
+text = input("Enter text: ")
+key = input("Enter key: ")
+mode = input("Encrypt or Decrypt? (e/d): ").strip().lower()
+print("Result:", playfair_cipher(text, key, encrypt=(mode == 'e')))
+```
 
 
 
+## Output:
 
+# ENCRYPTION
+![encrypt 2 py](https://github.com/user-attachments/assets/5e7800c5-9742-4f18-a6ce-bfc736a4a9cb)
 
-Output:
+# DECRYPTION
+![decrypt 2](https://github.com/user-attachments/assets/291f616b-d0e0-4b75-8e48-fa176cadaed9)
